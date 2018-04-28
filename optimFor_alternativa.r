@@ -1,4 +1,4 @@
-gerador = function(
+alternativa = function(
   talhao = NA,
   area = NA,
   idadeRot = NA,
