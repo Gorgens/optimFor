@@ -2,14 +2,9 @@
 
 ## econoFor
 
-### in R
-
 - *basicas.rmd*: script implementando funções das fórmulas básicas de economia.
 - *projetos.r*: script implementado funções para cálculo do VET e VPL de projetos florestais.
-
-### in Python
-
-- Conjunto de ferramentas para análise financeira de projetos florestais desenvolvidas em Python.
+- *basicas.py*: script com as ferramentas para análise financeira de projetos florestais em Python.
 
 ## optimFor
 
