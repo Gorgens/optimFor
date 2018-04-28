@@ -1,0 +1,291 @@
+---
+title: "EcoFor"
+author: "Eric Gorgens"
+date: "February 10, 2018"
+output: html_document
+---
+
+## Fórmulas auxiliares de economia
+
+
+Conjunto de fórmulas necessárias para avaliação econômica de projeto.
+
+### Valor presente
+
+```{r valorPresente}
+
+vp = function(vn, i, n){
+  return(vn / (1 + i)^n)
+}
+    
+```
+
+
+Sequencia de teste para fórmula do valor presente:
+
+```{r vp_teste}
+vp(100, 0.10, 0)
+vp(100, 0.10, 1)
+vp(100, 0.10, 2)
+vp(100, 0.10, 3)
+```
+
+### Valor futuro
+
+```{r valorFuturo}
+
+vf = function(v, i, n){
+  return(v * (1 + i)^n)
+}
+    
+```
+
+Sequencia de teste para fórmula do valor futuro:
+
+```{r vf_teste}
+vf(100, 0.10, 0)
+vf(100, 0.10, 1)
+vf(100, 0.10, 2)
+vf(100, 0.10, 3)
+```
+
+### Série Finita
+
+```{r seriefinita}
+
+serieFinita = function(a, i, n, presente = TRUE, t = NULL){
+    if (presente == TRUE){        
+        if (is.null(t)){
+            return((a*((1+i)^n)-1)/(i*(1+i)^n))
+        }else{
+            return((a*((1+i)^(n*t)-1))/(((1+i)^t - 1)*(1+i)^(n*t)))
+        }
+    }else{
+        if(t == None){
+            return((a*((1+i)^n - 1))/(i))
+        }else{
+            return(a*(((1+i)^n*t - 1)/((1+i)^t -1)))
+        }
+    }
+}
+
+```
+
+Testar série finita
+
+```{r sf_teste}
+serieFinita(100, 0.10, 12)
+```
+
+### Série Infinita
+
+```{r serieinfinita}
+
+serieInfinita = function(a, i, t = NULL){
+    if(is.null(t)){
+        return(a/i)
+    }else{
+        return(a/((1+i)^t -1))
+    }
+}
+
+```
+
+Testar série infinita
+
+```{r si_teste}
+serieInfinita(800, 0.01)
+```
+
+
+## Criando objetos
+
+Utilizaremos a estrutura de linguagem orientada a objeto conhecida como **R6**.
+
+```{r requer}
+library(R6)
+```
+
+### Objeto **Atividade**
+
+Criando um objeto para armazenar as atividades florestais:
+
+```{r atividade}
+
+Atividade = R6Class("Atividade",
+                  public = list(
+                    custoMo = NULL,
+                    custoMq = NULL,
+                    custoInsumo = NULL,
+                    anoHorizonte = NULL,
+                    #ganho = NULL,
+                    custoTotal = NULL,
+                    initialize = function(custoMo = NA, 
+                                          custoMq = NA, 
+                                          custoInsumo = NA, 
+                                          anoHorizonte = NA#,
+                                          #ganho = NA
+                                          ){
+                      self$custoMo = custoMo
+                      self$custoMq = custoMq
+                      self$custoInsumo = custoInsumo
+                      self$anoHorizonte = anoHorizonte
+                      #self$ganho = ganho
+                      self$custoTotal = as.numeric(custoMo) + as.numeric(custoMq) + as.numeric(custoInsumo)
+                    },
+                    #setGanho = function(valor){
+                    #  self$ganho = valor
+                    #},
+                    setAnoHorizonte = function(valor){
+                      self$anoHorizonte = valor
+                    }
+                  )
+                  )
+
+```
+
+Teste da criação de atividades:
+
+```{r atividadeTeste}
+
+quimicoTotal0 = Atividade$new(12, 18, 158, 0)
+quimicoTotal0
+
+calagem0 = Atividade$new(13, 33, 158, 0)
+subsolagem0 = Atividade$new(20, 50, 96, 0)
+plantio0 = Atividade$new(60, 12, 271, 0)
+adubPlantio0 = Atividade$new(32, 10, 95, 0)
+quimicoLinha1 = Atividade$new(31, 7, 30, 1)
+quimicoLinha2 = Atividade$new(31, 7, 30, 2)
+quimicoEntreLinha1 = Atividade$new(10, 15, 60, 1)
+adubManut = Atividade$new(2, 7, 116, 2)
+rocadaLinha = Atividade$new(35, 8, 0, 3)
+
+```
+
+### Objeto **Receita**
+
+Criando um objeto para armazenar as atividades florestais:
+
+```{r receita}
+
+Receita = R6Class("Receita",
+                  public = list(
+                    valorM3 = NULL,
+                    #taxaCrescimento = NULL,
+                    rotacao = NULL,
+                    producao = NULL,
+                    initialize = function(valorM3 = NA, 
+                                          rotacao = NA,
+                                          producao = NA
+                                          ){
+                      self$valorM3 = valorM3
+                      self$rotacao = rotacao
+                      self$producao = producao #producacao em resposta às técnicas silviculturais
+                    }#,
+                    #updateProducao = function(listaAtividades, sitio){
+                    #  self$producao = f(sitio, Atividades)
+                    #}
+                  )
+                  )
+
+```
+
+Teste da criação de atividades:
+
+```{r receitaTeste}
+
+eucaliptoCarvao = Receita$new(75, 7, 300)
+eucaliptoCarvao
+
+```
+
+### Objeto **Projeto** 
+
+```{r projeto}
+
+Projeto = R6Class("Projeto",
+                  public = list(
+                    listaAtividade = NULL,
+                    corteReceita = NULL,
+                    taxaInteresse = NULL,
+                    #desbasteReceita = NULL, # Incluir desbaste
+                    initialize = function(listaAtividade = list(plantio), 
+                                          corteReceita = eucaliptoCarvao, #Incluir multiplas receitas
+                                          taxaInteresse = NULL#,
+                                          #desbasteReceita = NULL #Incluir desbaste
+                                          ){
+                      self$listaAtividade = listaAtividade
+                      self$corteReceita = corteReceita
+                      #self$desbasteReceita = desbasteReceita #Incluir desbaste
+                      self$taxaInteresse = taxaInteresse
+                    },
+                    vpl = function(){
+                      if(!is.null(self$taxaInteresse)){
+                        custoPresente = 0
+                        for(i in self$listaAtividade){
+                          custoPresente = custoPresente + 
+                            (i$custoTotal / (1 + self$taxaInteresse)^i$anoHorizonte)
+                        }
+                        receitaPresente = self$corteReceita$producao * self$corteReceita$valorM3 / 
+                                 (1 + self$taxaInteresse)^self$corteReceita$rotacao
+                        return(receitaPresente - custoPresente)
+                      }else{
+                        seqTx = c()
+                        seqVpl = c()
+                        for(t in seq(0.01, 0.9, 0.01)){
+                            custoPresente = 0
+                            for(i in self$listaAtividade){
+                              custoPresente = custoPresente + 
+                                (i$custoTotal / (1 + t)^i$anoHorizonte)
+                            }
+                            receitaPresente = self$corteReceita$producao * self$corteReceita$valorM3 / 
+                                     (1 + t)^self$corteReceita$rotacao
+                            seqTx = c(seqTx, t)
+                            seqVpl = c(seqVpl, (receitaPresente - custoPresente))
+                        }
+                        print(plot(seqTx, seqVpl, type='l', ylim = c(-1000, max(seqVpl))) + abline(h = 0))
+                      }
+                    }#,
+                    #tir = function{
+                    #  
+                    #},
+                    #bc = function{
+                    #  
+                    #},
+                    #vet = function{
+                    #
+                    #},
+                    #vpla = function{
+                    #
+                    #}
+                  )
+                  )
+
+```
+
+Teste do objeto projeto:
+
+```{r testeProjeto}
+options(scipen=999)
+subsolagem0 = Atividade$new(20, 50, 96, 0)
+plantio0 = Atividade$new(60, 12, 271, 0)
+eucaliptoCarvao = Receita$new(75, 7, 300)
+
+# VPL com taxa de interesse fixa
+
+Projeto1 = Projeto$new(c(plantio0), eucaliptoCarvao, 0.10)
+Projeto1$vpl()
+
+Projeto2 = Projeto$new(c(plantio0, subsolagem0), eucaliptoCarvao, 0.10)
+Projeto2$vpl()
+
+# VPL com análise de sensibilidade
+
+Projeto1 = Projeto$new(c(plantio0), eucaliptoCarvao)
+Projeto1$vpl()
+
+Projeto2 = Projeto$new(c(plantio0, subsolagem0), eucaliptoCarvao)
+Projeto2$vpl()
+```
+
