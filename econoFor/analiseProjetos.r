@@ -8,7 +8,7 @@ vpl = function(
   
   VPR = sum(receita / (1 + i)^horizonte)
   VPC = sum(custo / (1 + i)^horizonte)
-
+  
   return(VPR - VPC)
 }
 
