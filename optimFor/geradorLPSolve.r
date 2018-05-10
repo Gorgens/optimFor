@@ -12,17 +12,17 @@ restProd = c()
 restProd2 = c()
 
 
-for(t in seq(1, 4, 1)){ #dim(cadastro)[1]
+for(t in seq(1, dim(cadastro)[1], 1)){ #4
   for(c in seq(1, dim(cenarios)[1], 1)){
     out = alternativa(talhao = cadastro$ID[t], area = cadastro$AREA[t], 
                       idade = cadastro$IDADE[t], rotacao = cadastro$ROTACAO[t], 
                       icR1 = cenarios[c,1], icR2 = cenarios[c,2], 
-                      modeloR1 = mcp[mcp$MatGen == cadastro$ESPECIE[t] & mcp$Sitio == cadastro$SITIO[t] & mcp$Rotação == 1, c(4, 5, 6)], 
-                      modeloR2 = mcp[mcp$MatGen == cadastro$ESPECIE[t] & mcp$Sitio == cadastro$SITIO[t] & mcp$Rotação == 2, c(4, 5, 6)])
-    if(c == 1){
+                      modeloR1 = mcp[mcp$MatGen == cadastro$ESPECIE[t] & mcp$Sitio == cadastro$SITIO[t] & mcp$Rotacao == 1, c(4, 5, 6)], 
+                      modeloR2 = mcp[mcp$MatGen == cadastro$ESPECIE[t] & mcp$Sitio == cadastro$SITIO[t] & mcp$Rotacao == 2, c(4, 5, 6)])
+    if(t == 1 & c == 1){
       fo = paste(round(out[[2]], 2), out[[1]])
     } else{
-    fo = paste(fo, "+", round(out[[2]], 2), out[[1]])
+      fo = paste(fo, "+", round(out[[2]], 2), out[[1]])
     }
     
     if(c==1){
