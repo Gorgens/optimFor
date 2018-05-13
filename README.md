@@ -8,7 +8,8 @@
 
 ## optimFor
 
-- **geradorAlternativa.r**: script para gerar nome, plano de produção e valor total produzido da alternativa.
+- **geradorAlternativaDesvITC.r**: script para gerar nome, plano de produção e valor total produzido da alternativa.
+- **geradorAlternativaMaxProd.r**: script para gerar nome, plano de produção e valor total produzido da alternativa.
 - **geradorLPSolve.r**: script para gerar modelo matemático para ser otimizado no LPSolve.
 - **cadastro.csv**: exemplo de cadastro florestal utilizado nos códigos de *optim*.
 - **mcp.csv**: coeficientes para modelo de crescimento dos talhões da base **cadastro.csv**.
