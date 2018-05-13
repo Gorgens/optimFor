@@ -52,7 +52,7 @@ for(h in seq(1, dim(restProd)[2], 1)){
 #print(restArea)
 #print(restProd)[1:5,]
 #print(restProd2)
-
+write.csv(restProd, "tabelaProducao.csv")
  
 fileConn<-file("lpsolveModel.txt")
 writeLines(fo, fileConn)
