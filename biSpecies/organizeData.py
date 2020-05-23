@@ -45,22 +45,22 @@ bon2014 = pd.read_csv('BON_A01_2014_Inventory.csv', encoding='latin-1')
 bon2014['date'] = pd.to_datetime(bon2014.date, format='%Y%m%d')
 print(bon2014.columns)
 print(bon2014.shape)
-#print(ana2018.head())
+print(bon2014.head())
 
 
 
 ## Unir os dataframes
 
-# frames = [and2013, ana2015]
-# inv = pd.concat(frames)
-# print(inv.columns)
-# print(inv.shape)
-# print(inv.head())
-#
-# inv.to_csv('dataBaseInventarios.csv', index=False, encoding='utf-8')
-#
-#
-# # Visualizar distribuição diametrica
+frames = [and2013, ana2015, ana2018, bon2014]
+inv = pd.concat(frames)
+print(inv.columns)
+print(inv.shape)
+print(inv.head())
+
+#inv.to_csv('dataBaseInventarios.csv', index=False, encoding='utf-8')
+
+
+# Visualizar distribuição diametrica
 # dbh = inv['DBH']
 #
 # fig, ax = plt.subplots()
@@ -69,5 +69,5 @@ print(bon2014.shape)
 # ax.set_ylabel('Probability density')
 # fig.tight_layout()
 # plt.show()
-# #plt.savefig('dbhHist.png')
-#
+#plt.savefig('dbhHist.png')
+
