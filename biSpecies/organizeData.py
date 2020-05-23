@@ -34,6 +34,7 @@ print(inv.columns)
 print(inv.shape)
 print(inv.head())
 
+inv.to_csv('dataBaseInventarios.csv', index=False, encoding='utf-8')
 
 
 # Visualizar distribuição diametrica
