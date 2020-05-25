@@ -185,11 +185,48 @@ fna2013.rename(columns={'transect': 'trans.ID',
                         'UTM_Northing': 'UTM.Northing'}, inplace=True)
 fna2013['date'] = pd.to_datetime(fna2013.date, format='%Y%m%d')
 
+fst2013 = pd.read_csv('FST_A01_2013_Inventory.csv', encoding='latin-1')
+# print(fst2013.columns)
+fst2013 = fst2013[['area', 'transect', 'tree', 'common_name', 'scienfic_name',
+                   'family_name', 'DBH', 'type', 'canopy', 'Light',
+                   'Dead', 'D_class', 'Hcom', 'Htot', 'RN', 'RS', 'Date',
+                   'RE', 'RW', 'UTM_Easting', 'UTM_Northing']]
+# print(fst2013.columns)
+# print(fst2013.shape)
+fst2013.rename(columns={'transect': 'trans.ID',
+                        'common_name': 'common.name',
+                        'scienfic_name': 'scientific.name',
+                        'family_name':  'family.name',
+                        'Dead': 'dead',
+                        'Light': 'light',
+                        'Date': 'date',
+                        'D_class': 'D.class',
+                        'UTM_Easting': 'UTM.Easting',
+                        'UTM_Northing': 'UTM.Northing'}, inplace=True)
+fst2013['date'] = pd.to_datetime(fst2013.date, format='%Y%m%d')
+
+hum2014 = pd.read_csv('HUM_A01_2014_Inventory.csv', encoding='latin-1')
+# print(hum2014.columns)
+hum2014 = hum2014[['area', 'plot_ID', 'tree', 'common_name', 'scientific_name',
+                   'family_name', 'DBH', 'type', 'burnt_area',
+                   'dead', 'd_class', 'Hcom', 'Htot', 'date',
+                   'UTM_Easting', 'UTM_Northing']]
+# print(hum2014.columns)
+# print(hum2014.shape)
+hum2014.rename(columns={'plot_ID': 'plot',
+                        'common_name': 'common.name',
+                        'scientific_name': 'scientific.name',
+                        'family_name':  'family.name',
+                        'd_class': 'D.class',
+                        'burnt_area': 'burnt.area',
+                        'UTM_Easting': 'UTM.Easting',
+                        'UTM_Northing': 'UTM.Northing'}, inplace=True)
+hum2014['date'] = pd.to_datetime(hum2014.date, format='%Y%m%d')
 
 # Unir os dataframes
 
 frames = [and2013, ana2015, ana2018, bon2014, cau2012, cau2014, cau2018, duc2009,
-          duc2011, duc2016, fn2015, fna2013]
+          duc2011, duc2016, fn2015, fna2013, fst2013, hum2014]
 inv = pd.concat(frames)
 print(inv.columns)
 print(inv.shape)
