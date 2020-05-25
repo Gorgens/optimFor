@@ -99,9 +99,97 @@ cau2018.rename(columns={'group_code': 'trans.ID',
                         'UTM_Northing': 'UTM.Northing'}, inplace=True)
 cau2018['date'] = pd.to_datetime(cau2018.date, format='%Y%m%d')
 
+duc2009 = pd.read_csv('DUC_A01_2009&2011_Inventory.csv', encoding='latin-1')
+# print(duc2009.columns)
+duc2009 = duc2009[['Area', 'trans', 'tree', 'common.name', 'scientific.name',
+                   'family.name', 'DBH.09', 'type.09', 'canopy.09', 'light.09',
+                   'Dead.09', 'D.class.09', 'Hcom.09', 'Htot.09', 'RN.09', 'RS.09',
+                   'RE.09', 'RW.09', 'UTM.Easting', 'UTM.Northing']]
+# print(duc2009.columns)
+# print(duc2009.shape)
+duc2009.rename(columns={'Area': 'area',
+                        'trans': 'trans.ID',
+                        'DBH.09': 'DBH',
+                        'type.09': 'type',
+                        'canopy.09': 'canopy',
+                        'light.09': 'light',
+                        'Dead.09': 'dead',
+                        'D.class.09': 'D.class',
+                        'Hcom.09': 'Hcom',
+                        'Htot.09': 'Htot',
+                        'RN.09': 'RN',
+                        'RS.09': 'RS',
+                        'RE.09': 'RE',
+                        'RW.09': 'RW'}, inplace=True)
+duc2009['date'] = '2009-01-01'
+
+duc2011 = pd.read_csv('DUC_A01_2009&2011_Inventory.csv', encoding='latin-1')
+# print(duc2011.columns)
+duc2011 = duc2011[['Area', 'trans', 'tree', 'common.name', 'scientific.name',
+                   'family.name', 'DBH.11', 'type.11', 'canopy.11', 'light.11',
+                   'Dead.11', 'D.class.11', 'Hcom.11', 'Htot.11', 'RN.11', 'RS.11',
+                   'RE.11', 'RW.11', 'UTM.Easting', 'UTM.Northing']]
+# print(duc2011.columns)
+# print(duc2011.shape)
+duc2011.rename(columns={'Area': 'area',
+                        'trans': 'trans.ID',
+                        'DBH.11': 'DBH',
+                        'type.11': 'type',
+                        'canopy.11': 'canopy',
+                        'light.11': 'light',
+                        'Dead.11': 'dead',
+                        'D.class.11': 'D.class',
+                        'Hcom.11': 'Hcom',
+                        'Htot.11': 'Htot',
+                        'RN.11': 'RN',
+                        'RS.11': 'RS',
+                        'RE.11': 'RE',
+                        'RW.11': 'RW'}, inplace=True)
+duc2011['date'] = '2011-01-01'
+
+duc2016 = pd.read_csv('DUC_A01_2016_inventory.csv', encoding='latin-1')
+# print(duc2016.columns)
+# print(duc2016.columns)
+# print(duc2016.shape)
+duc2016.rename(columns={'Dead': 'dead'}, inplace=True)
+duc2016['date'] = pd.to_datetime(duc2016.date, format='%Y%m%d')
+
+fn2015 = pd.read_csv('FN_A01_2015_Inventory.csv', encoding='latin-1', delimiter=';', decimal='.')
+fn2015.drop('UTM.Easting', axis=1, inplace=True)
+fn2015.drop('UTM.Northing', axis=1, inplace=True)
+# print(fn2015.columns)
+# print(fn2015.columns)
+# print(fn2015.shape)
+fn2015.rename(columns={'Dead': 'dead',
+                       'group': 'trans.ID'}, inplace=True)
+fn2015['date'] = pd.to_datetime(fn2015.date, format='%Y%m%d')
+
+fna2013 = pd.read_csv('FNA_A01_2013_Inventory.csv', encoding='latin-1')
+# print(fna2013.columns)
+fna2013 = fna2013[['area', 'transect', 'tree', 'common_name', 'scienfic_name',
+                   'family_name', 'DBH', 'type', 'canopy', 'Light', 'plot_code',
+                   'Dead', 'D_class', 'Hcom', 'Htot', 'RN', 'RS', 'Date',
+                   'RE', 'RW', 'UTM_Easting', 'UTM_Northing']]
+# print(fna2013.columns)
+# print(fna2013.shape)
+fna2013.rename(columns={'transect': 'trans.ID',
+                        'common_name': 'common.name',
+                        'scienfic_name': 'scientific.name',
+                        'family_name':  'family.name',
+                        'plot_code': 'plot',
+                        'Dead': 'dead',
+                        'Light': 'light',
+                        'Date': 'date',
+                        'D_class': 'D.class',
+                        'UTM_Easting': 'UTM.Easting',
+                        'UTM_Northing': 'UTM.Northing'}, inplace=True)
+fna2013['date'] = pd.to_datetime(fna2013.date, format='%Y%m%d')
+
+
 # Unir os dataframes
 
-frames = [and2013, ana2015, ana2018, bon2014, cau2012, cau2014, cau2018]
+frames = [and2013, ana2015, ana2018, bon2014, cau2012, cau2014, cau2018, duc2009,
+          duc2011, duc2016, fn2015, fna2013]
 inv = pd.concat(frames)
 print(inv.columns)
 print(inv.shape)
