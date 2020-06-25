@@ -2,6 +2,7 @@
 
 ## Floresta nativa
 
+![](nativa/img/fluxo2.png)
 
 ## Floresta plantada
 
