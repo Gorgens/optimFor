@@ -1,6 +1,8 @@
-# Simulação de florestas
+# Simulação de florestas nativa
 
-## Floresta nativa
+Em computação, simulação consiste em empregar formalizações em computadores, tais como expressões matemáticas ou especificações mais ou menos formalizadas, com o propósito de imitar um processo ou operação do mundo real. Desta forma, para ser realizada uma simulação, é necessário construir um modelo computacional que corresponda à situação real que se deseja simular.
+
+## Em floresta nativa
 
 ![](nativa/img/fluxo2.png)
 
@@ -51,10 +53,6 @@
 ![](nativa/img/ingressoArea.png)
 
 ![](nativa/img/ingressoAreaBinomial.png)
-
-## Floresta plantada
-
-
 
 ## Exemplos de simulador
 
