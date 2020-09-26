@@ -4,55 +4,55 @@ Em computação, simulação consiste em empregar formalizações em computadore
 
 ## Em floresta nativa
 
-![](nativa/img/fluxo2.png)
+![](img/fluxo2.png)
 
 - Mortalidade
 
-![](nativa/img/mortalidadeArea.png)
+![](img/mortalidadeArea.png)
 
-![](nativa/img/mortalidadeAreaBinomial.png)
+![](img/mortalidadeAreaBinomial.png)
 
-![](nativa/img/mortalidadeEcologico.png)
+![](img/mortalidadeEcologico.png)
 
-![](nativa/img/mortalidadeEcologicoBinomial.png)
+![](img/mortalidadeEcologicoBinomial.png)
 
-![](nativa/img/mortalidadeDiametro.png)
+![](img/mortalidadeDiametro.png)
 
-![](nativa/img/mortalidadeDiametroBinomial.png)
+![](img/mortalidadeDiametroBinomial.png)
 
 - Crescimento
 
-![](nativa/img/crescimentoArea.png)
+![](img/crescimentoArea.png)
 
-![](nativa/img/crescimentoAreaBinomial.png)
+![](img/crescimentoAreaBinomial.png)
 
-![](nativa/img/crescimentoEcologico.png)
+![](img/crescimentoEcologico.png)
 
-![](nativa/img/crescimentoEcologicoBinomial.png)
+![](img/crescimentoEcologicoBinomial.png)
 
-![](nativa/img/crescimentoDiametro.png)
+![](img/crescimentoDiametro.png)
 
-![](nativa/img/crescimentoDiametroBinomial.png)
+![](img/crescimentoDiametroBinomial.png)
 
 - Incremento
 
-![](nativa/img/incrementoArea.png)
+![](img/incrementoArea.png)
 
-![](nativa/img/incrementoAreaBinomial.png)
+![](img/incrementoAreaBinomial.png)
 
-![](nativa/img/incrementoEcologico.png)
+![](img/incrementoEcologico.png)
 
-![](nativa/img/incrementoEcologicoBinomial.png)
+![](img/incrementoEcologicoBinomial.png)
 
-![](nativa/img/incrementoDiametro.png)
+![](img/incrementoDiametro.png)
 
-![](nativa/img/incrementoDiametroBinomial.png)
+![](img/incrementoDiametroBinomial.png)
 
 - Ingresso
 
-![](nativa/img/ingressoArea.png)
+![](img/ingressoArea.png)
 
-![](nativa/img/ingressoAreaBinomial.png)
+![](img/ingressoAreaBinomial.png)
 
 ## Exemplos de simulador
 
