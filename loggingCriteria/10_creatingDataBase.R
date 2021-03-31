@@ -87,6 +87,7 @@ cau2014b %<>% rename(plot = group_code,
 cau2014b$area = 'CAU_A01_50'
 cau2014b$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 cau2014b$plot %<>% as.character()
+cau2014b$subplot %<>% as.character()
 cau2014b$tree %<>% as.character()
 
 cau2018 = read.csv(paste0(PATH, 'CAU_A01_2014_2018_Inventory_plot50x50_delivery.csv'), encoding='latin-1')
@@ -107,6 +108,7 @@ cau2018 %<>% rename(plot = group_code,
 cau2018$area = 'CAU_A01_50'
 cau2018$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 cau2018$plot %<>% as.character()
+cau2018$subplot %<>% as.character()
 cau2018$tree %<>% as.character()
 
 duc2009 = read.csv(paste0(PATH, 'DUC_A01_2009_2011_Inventory.csv'), encoding='latin-1')
@@ -119,6 +121,7 @@ duc2009 %<>% rename(area = Area, plot = trans, DBH = DBH.09,
                     dead = Dead.09, D.class = D.class.09, Hcom = Hcom.09,
                     Htot = Htot.09, RN = RN.09, RS = RS.09, RE = RE.09, RW = RW.09)
 duc2009$date = as.Date('20090101', format = '%Y%m%d')
+duc2009$plot %<>% as.character()
 duc2009$subplot = 'None'
 duc2009$tree %<>% as.character()
 
@@ -132,6 +135,7 @@ duc2011 %<>% rename(area = Area, plot = trans, DBH = DBH.11,
                     dead = Dead.11, D.class = D.class.11, Hcom = Hcom.11,
                     Htot = Htot.11, RN = RN.11, RS = RS.11, RE = RE.11, RW = RW.11)
 duc2011$date = as.Date('20110101', format = '%Y%m%d')
+duc2011$plot %<>% as.character()
 duc2011$subplot = 'None'
 duc2011$tree %<>% as.character()
 
@@ -140,6 +144,7 @@ duc2016 %<>% rename(dead = Dead)
 duc2016$date %<>% as.character() %>% substr(1,8) %>% as.Date(format = '%Y%m%d')
 duc2016$area = 'DUC_A01b'
 duc2016$plot %<>% as.character()
+duc2016$subplot = 'None'
 duc2016$tree %<>% as.character()
 
 fn2015 = read.csv(paste0(PATH, 'FN_A01_2015_Inventory.csv'), encoding ='latin-1', sep = ';', dec = '.')
@@ -147,6 +152,7 @@ fn2015 %<>% select(-UTM.Easting, -UTM.Northing)
 fn2015 %<>% rename(dead = Dead, subplot = plot, plot = group)
 fn2015$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 fn2015$plot %<>% as.character()
+fn2015$subplot %<>% as.character()
 fn2015$tree %<>% as.character()
 
 fna2013 = read.csv(paste0(PATH, 'FNA_A01_2013_Inventory.csv'), encoding ='latin-1')
@@ -156,7 +162,7 @@ fna2013 %<>% select(area, transect, tree, common_name, scienfic_name,
                     RE, RW, Date, UTM_Easting, UTM_Northing)
 fna2013 %<>% rename(subplot = plot_code, plot = transect, common.name = common_name, 
                     scientific.name = scienfic_name, family.name = family_name,
-                    plot = plot_code, dead = Dead, light = Light, date = Date,
+                    dead = Dead, light = Light, date = Date,
                     D.class = D_class, UTM.Easting = UTM_Easting, UTM.Northing = UTM_Northing)
 fna2013$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 fna2013$common.name %<>% enc2utf8() %>% lowerCase()
@@ -164,6 +170,7 @@ fna2013 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
 fna2013$plot %<>% as.character()
+fna2013$subplot %<>% as.character()
 fna2013$tree %<>% as.character()
 
 fst2013 = read.csv(paste0(PATH, 'FST_A01_2013_Inventory.csv'), encoding ='latin-1')
@@ -180,6 +187,7 @@ fst2013$common.name %<>% enc2utf8() %>% lowerCase()
 fst2013 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+fst2013$plot %<>% as.character()
 fst2013$subplot = 'None'
 fst2013$tree %<>% as.character()
 
@@ -194,6 +202,7 @@ hum2014 %<>% rename(plot = plot_ID, common.name = common_name,
 hum2014$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 hum2014$common.name %<>% enc2utf8() %>% lowerCase()
 hum2014$plot %<>% as.character()
+hum2014$subplot = 'None'
 hum2014$tree %<>% as.character()
 
 jam2011 = read.csv(paste0(PATH, 'JAM_A01_2011_Inventory.csv'), encoding ='latin-1', dec = '.', sep = ';')
@@ -209,6 +218,7 @@ jam2011$common.name %<>% enc2utf8() %>% lowerCase()
 jam2011 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+jam2011$plot %<>% as.character()
 jam2011$subplot = 'None'
 jam2011$tree %<>% as.character()
 
@@ -230,6 +240,7 @@ jam22011$common.name %<>% enc2utf8() %>% lowerCase()
 jam22011 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+jam22011$plot %<>% as.character()
 jam22011$subplot = 'None'
 jam22011$tree %<>% as.character()
 
@@ -254,6 +265,7 @@ jam32013 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
 jam32013$plot %<>% as.character()
+jam32013$subplot %<>% as.character()
 jam32013$tree %<>% as.character()
 
 jam22013 = read.csv(paste0(PATH, 'JAM_A02_2013_Inventory.csv'), encoding ='latin-1', 
@@ -279,6 +291,7 @@ jam22013 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
 jam22013$plot %<>% as.character()
+jam22013$subplot %<>% as.character()
 jam22013$tree %<>% as.character()
 
 par2013 = read.csv(paste0(PATH, 'PAR_A01_2013_2018_Inventory.csv'), encoding='latin-1')
@@ -310,6 +323,7 @@ par2013$RN %<>% as.numeric()
 par2013$RS %<>% as.numeric()
 par2013$RE %<>% as.numeric()
 par2013$RW %<>% as.numeric()
+par2013$plot %<>% as.character()
 par2013$subplot = 'None'
 par2013$tree %<>% as.character()
 
@@ -331,6 +345,7 @@ par2018$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 par2018$DBH = gsub(',', '.', par2018$DBH)
 par2018$DBH %<>% as.numeric()
 par2018$common.name %<>% enc2utf8() %>% lowerCase()
+par2013$plot %<>% as.character()
 par2018$subplot = 'None'
 par2018$tree %<>% as.character()
 
@@ -352,6 +367,7 @@ san2014 %<>% rename(DBH = DBH.2014,
 san2014$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 san2014$common.name %<>% enc2utf8() %>% lowerCase()
 san2014$plot %<>% as.character()
+san2014$subplot = 'None'
 san2014$tree %<>% as.character()
 
 san2016 = read.csv(paste0(PATH, 'SAN_A01_2014_2016_Inventory.csv'), encoding='latin-1')
@@ -364,6 +380,7 @@ san2016 %<>% rename(DBH = DBH.2016,
 san2016$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 san2016$common.name %<>% enc2utf8() %>% lowerCase()
 san2016$plot %<>% as.character()
+san2016$subplot = 'None'
 san2016$tree %<>% as.character()
 
 san22014 = read.csv(paste0(PATH, 'SAN_A02_2014_Inventory.csv'), encoding='latin-1')
@@ -377,6 +394,7 @@ san22014 %<>% rename(subplot = plot,
 san22014$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 san22014$common.name %<>% enc2utf8() %>% lowerCase()
 san22014$plot %<>% as.character()
+san22014$subplot %<>% as.character()
 san22014$tree %<>% as.character()
 
 sfx2011 = read.csv(paste0(PATH, 'SFX_A01_2011_Inventory.csv'), encoding='latin-1')
@@ -399,6 +417,7 @@ sfx2011 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
 sfx2011$plot %<>% as.character()
+sfx2011$subplot = 'None'
 sfx2011$tree %<>% as.character()
 
 sfx22012 = read.csv(paste0(PATH, 'SFX_A02_2012_Inventory.csv'), encoding='latin-1')
@@ -421,6 +440,7 @@ sfx22012 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
 sfx22012$plot %<>% as.character()
+sfx22012$subplot = 'None'
 sfx22012$tree %<>% as.character()
 
 sfx32012 = read.csv(paste0(PATH, 'SFX_A03_2012_Inventory.csv'), encoding='latin-1')
@@ -441,6 +461,7 @@ sfx32012 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
 sfx32012$plot %<>% as.character()
+sfx32012$subplot = 'None'
 sfx32012$tree %<>% as.character()
 
 tac2014 = read.csv(paste0(PATH, 'TAC_A01_2014_Inventory.csv'), encoding='latin-1')
@@ -453,6 +474,7 @@ tac2014 %<>% rename(area = Area,
 tac2014$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tac2014$common.name %<>% enc2utf8() %>% lowerCase()
 tac2014$plot %<>% as.character()
+tac2014$subsplot = 'None'
 tac2014$tree %<>% as.character()
 
 tac2015 = read.csv(paste0(PATH, 'TAC_A01_2015_Inventory.csv'), encoding='latin-1')
@@ -468,6 +490,7 @@ tac2015$area = 'TAC_A01b'
 tac2015$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tac2015$common.name %<>% enc2utf8() %>% lowerCase()
 tac2015$plot %<>% as.character()
+tac2015$subplot %<>% as.character()
 tac2015$tree %<>% as.character()
 
 tal2014 = read.csv(paste0(PATH, 'TAL_A01_2014_Inventory.csv'), encoding='latin-1')
@@ -486,6 +509,7 @@ tal2014 %<>% rename(plot = plot_ID,
 tal2014$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tal2014$common.name %<>% enc2utf8() %>% lowerCase()
 tal2014$plot %<>% as.character()
+tal2014$subplot = 'None'
 tal2014$tree %<>% as.character()
 
 tan2012 = read.csv(paste0(PATH, 'TAN_A01_2012_Inventory.csv'), encoding='latin-1')
@@ -511,6 +535,7 @@ tan2012 %<>% mutate(dead = case_when(
 tan2012$Hcom %<>% as.numeric()
 tan2012$UTM.Easting %<>% as.numeric()
 tan2012$UTM.Northing %<>% as.numeric()
+tan2012$plot %<>% as.character()
 tan2012$subplot = 'None'
 tan2012$tree %<>% as.character()
 
@@ -544,6 +569,7 @@ tap2009$dead %<>% replace_na('A')
 tap2009 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap2009$plot %<>% as.character()
 tap2009$subplot = 'None'
 tap2009$tree %<>% as.character()
 
@@ -578,6 +604,7 @@ tap2010$dead %<>% replace_na('A')
 tap2010 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap2010$plot %<>% as.character()
 tap2010$subplot = 'None'
 tap2010$tree %<>% as.character()
 
@@ -612,6 +639,7 @@ tap2011$dead %<>% replace_na('A')
 tap2011 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap2011$plot %<>% as.character()
 tap2011$subplot = 'None'
 tap2011$tree %<>% as.character()
 
@@ -641,6 +669,7 @@ tap2015$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap2015$common.name %<>% enc2utf8() %>% lowerCase()
 tap2015$dead %<>% replace_na(FALSE)
 tap2015$plot %<>% as.character()
+tap2015$subplot = 'None'
 tap2015$tree %<>% as.character()
 tap2011 %<>% filter(area != '')
 
@@ -663,6 +692,7 @@ tap2016$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap2016$common.name %<>% enc2utf8() %>% lowerCase()
 tap2016$dead %<>% replace_na(FALSE)
 tap2016$plot %<>% as.character()
+tap2016$subsplot = 'None'
 tap2016$tree %<>% as.character()
 
 tap2018 = read.csv(paste0(PATH, 'TAP_A01_2015_2016_2018_inventory_delivery.csv'), encoding='latin-1')
@@ -681,6 +711,7 @@ tap2018$area = 'TAP_A01b'
 tap2018$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap2018$common.name %<>% enc2utf8() %>% lowerCase()
 tap2018$plot %<>% as.character()
+tap2018$subsplot = 'None'
 tap2018$tree %<>% as.character()
 
 tap32015 = read.csv(paste0(PATH, 'TAP_A03_2015_Inventory.csv'), encoding='latin-1')
@@ -689,9 +720,10 @@ tap32015 %<>% select(area, plot, tree, common.name, scientific.name,
                     Hcom, Htot, RN, RS, RE, RW,
                     date, UTM.Easting, UTM.Northing)
 tap32015 %<>% rename(dead = Dead)
-tap32015$date %<>% as.Date('20151209', format = '%Y%m%d')
+tap32015$date = as.Date('20151209', format = '%Y%m%d')
 tap32015$common.name %<>% enc2utf8() %>% lowerCase()
 tap32015$plot %<>% as.character()
+tap32015$subplot = 'None'
 tap32015$tree %<>% as.character()
 
 tap42010 = read.csv(paste0(PATH, 'TAP_A04_2010_2011.csv'), encoding='latin-1')
@@ -723,6 +755,7 @@ tap42010$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap42010 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap42010$plot %<>% as.character()
 tap42010$subplot = 'None'
 tap42010$tree %<>% as.character()
 
@@ -755,6 +788,7 @@ tap42011$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap42011 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap42011$plot %<>% as.character()
 tap42011$subplot = 'None'
 tap42011$tree %<>% as.character()
 
@@ -787,6 +821,7 @@ tap52010$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap52010 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap52010$plot %<>% as.character()
 tap52010$subplot = 'None'
 tap52010$tree %<>% as.character()
 
@@ -819,6 +854,7 @@ tap52011$date %<>% as.character() %>% as.Date(format = '%Y%m%d')
 tap52011 %<>% mutate(dead = case_when(
   dead == 'D' ~ TRUE,
   dead == 'A' ~ FALSE))
+tap52011$plot %<>% as.character()
 tap52011$subplot = 'None'
 tap52011$tree %<>% as.character()
 

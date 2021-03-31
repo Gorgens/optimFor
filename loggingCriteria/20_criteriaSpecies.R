@@ -23,11 +23,11 @@ speciesList = inv.paisagens.filtered %>%
   select(scientific.name)
 
 # ntree per hectare by area
-temp = inv.paisagens.filtered %>%
-  group_by(area, plot, plot_ID) %>% 
-  summarise(ntree = sum(eqTree)) #%>%
-  # group_by(area) %>%
-  # summarise(ntree = mean(ntree))
+arvHaArea = inv.paisagens.filtered %>%
+  group_by(area, plot, subplot) %>% 
+  summarise(ntree = sum(eqTree)) %>%
+  group_by(area) %>%
+  summarise(ntree = mean(ntree))
 
 # plot diameter distribution n/ha
 inv.paisagens.filtered %>%
