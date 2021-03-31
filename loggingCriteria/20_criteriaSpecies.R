@@ -6,8 +6,8 @@ require(plotly)
 inv.paisagens = read.csv("10_invPaisagensMerged.csv")
 
 # check number number of observation in dataframe
-# sapply(inv.paisagens, function(x) sum(is.na(x)))
-# table(inv.paisagens$area)
+sapply(inv.paisagens, function(x) sum(is.na(x)))
+table(inv.paisagens$area)
 
 # remove NA values for DBH
 inv.paisagens.filtered = inv.paisagens %>% 
