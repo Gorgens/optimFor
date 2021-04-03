@@ -17,7 +17,7 @@ ggplot(inv.paisagens.filtered, aes(DBH, Htot)) +                                
                      panel.grid.minor = element_blank(),
                      panel.background = element_blank(),
                      axis.line = element_line(colour = "black"))
-ggsave("./graphHipsometria.png")
+ggsave("./plot/graphHipsometria.png")
 
 parcelasArea = inv.paisagens.filtered %>%                                       # conta número de parcelas em cada área
   group_by(area, plot, subplot, year) %>%
@@ -27,11 +27,12 @@ parcelasArea = inv.paisagens.filtered %>%                                       
   group_by(area) %>%
   summarise(nplots = mean(nplots))
 
-### Critérios por espécie -------------------------------
+### Critérios por espécies comerciais  -------------------------------
 speciesList = inv.paisagens.filtered %>%                                        # Lista das espécies com maior número de árvores
+  filter(comercial == 1) %>%                                                    # filtra espécies comerciais
   group_by(scientific.name) %>%
   summarise(ntree = n()) %>%
-  filter(ntree > 300) %>%
+  filter(ntree > 60) %>%
   select(scientific.name)
 
 # Densidade de indivíduos
@@ -47,38 +48,55 @@ arvHaEspecie = inv.paisagens.filtered %>%
   left_join(parcelasArea) %>%
   mutate(arvha = ntree / nplots) %>%
   group_by(scientific.name) %>%
-  summarise(arvha = mean(arvha))
+  summarise(arvha = mean(arvha)) %>%
+  filter(scientific.name %in% speciesList$scientific.name)
 
 # Distribuição diamétrica
-numeroArvores = inv.paisagens.filtered %>%
-  filter(scientific.name == speciesList$scientific.name[1]) %>%
-  filter(DBH >= 10) %>%
-  group_by(area, plot, subplot, year, cc) %>% 
-  summarise(ntree = sum(eqTree))  %>%
-  drop_na(ntree) %>%
-  group_by(area, cc) %>%
-  summarise(narv = sum(ntree)) %>%
-  left_join(parcelasArea) %>%
-  mutate(arvha = narv / nplots) %>%
-  group_by(cc) %>%
-  summarise(arvha = mean(arvha))
-  
-ggplot(numeroArvores, aes(cc, arvha)) + geom_col() +
-  xlab('Diameter distribution') + ylab('Trees per hectare') +
-  ggtitle(paste0(speciesList$scientific.name[1])) + 
+for(i in speciesList$scientific.name){
+  numeroArvores = inv.paisagens.filtered %>%
+    filter(scientific.name == i) %>%
+    filter(DBH >= 10) %>%
+    group_by(area, plot, subplot, year, cc) %>% 
+    summarise(ntree = sum(eqTree))  %>%
+    drop_na(ntree) %>%
+    group_by(area, cc) %>%
+    summarise(narv = sum(ntree)) %>%
+    left_join(parcelasArea) %>%
+    mutate(arvha = narv / nplots) %>%
+    group_by(cc) %>%
+    summarise(arvha = mean(arvha))
+    
+  ggplot(numeroArvores, aes(cc, arvha)) + geom_col() +
+    xlab('Diameter distribution') + ylab('Trees per hectare') +
+    ggtitle(paste0(i)) + 
+    theme_bw() + theme(panel.grid.major = element_blank(),
+                       panel.grid.minor = element_blank(),
+                       panel.background = element_blank(),
+                       axis.line = element_line(colour = "black"))
+  ggsave(paste0('./plot/dd_',i, '.png'))
+}
+
+# Ciclo de exploração
+#pareado = dcast(inv.paisagens, area + plot + subplot + tree ~ year, value.var='DBH', fun.aggregate=sum)
+incremento = inv.paisagens %>%
+  group_by(area, plot, subplot, tree, scientific.name) %>%
+  summarise(cc = min(cc), minDBH = min(DBH), maxDBH = max(DBH), 
+            inc = max(DBH) - min(DBH), intervMed = max(year) - min(year), 
+            incAnual = inc / intervMed) %>%
+  filter(inc > 0)
+
+ggplot(incremento, aes(as.factor(cc), incAnual)) + geom_boxplot() +
+  xlab('Diameter class') +
   theme_bw() + theme(panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(),
                      panel.background = element_blank(),
                      axis.line = element_line(colour = "black"))
-ggsave(paste0('dd_',speciesList$scientific.name[1], '.png'))
+ggsave('./plot/incrementoAnual.png')
 
-# Ciclo de exploração
-pareado = inv.paisagens %>% dcast(area + plot + subplot + tree ~ year, 
-                                  value.var="DBH", fun.aggregate=sum)
-incremento = pareado %>%
-  group_by(area, plot, subplot, tree) %>%
-  summarise(minDBH = min(DBH), maxDBH = max(DBH), inc = max(DBH) - min(DBH)) %>%
-  filter(inc > 0)
+incrementoSpecies = incremento %>%
+  filter(scientific.name %in% speciesList$scientific.name) %>%
+  group_by(scientific.name) %>%
+  summarise(incAnual = mean(incAnual), tp = 50 / incAnual)
 
 # Padrão espacial
 
