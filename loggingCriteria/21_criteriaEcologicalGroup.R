@@ -45,7 +45,7 @@ png(paste0('./plot/filo_', grupo, '.png'), width = 10, height = 10, units = 'cm'
 plotTree(tree, type='fan', fsize=0.5, lwd=1, ftype='i')
 dev.off()
 
-### Critérios por espécies grupo escológico ------------------------------------
+### Critérios por grupo escológico ------------------------------------
 
 # Densidade de indivíduos
 arvHaEspecie = inv.paisagens.filtered %>%
@@ -94,11 +94,18 @@ incremento = inv.paisagens %>%
   summarise(cc = min(cc), minDBH = min(DBH), maxDBH = max(DBH), 
             inc = max(DBH) - min(DBH), intervMed = max(year) - min(year), 
             incAnual = inc / intervMed) %>%
-  filter(inc > 0)
+  filter(inc > 0) %>%
+  drop_na(GrupoEco)
 
 incrementoGrupo = incremento %>%
   group_by(GrupoEco) %>%
-  summarise(incAnual = mean(incAnual), tp = 50 / incAnual)
+  summarise(incDesv = sd(incAnual, na.rm = TRUE), incAnual = mean(incAnual), tp = 50 / incAnual)
+
+incremento$GrupoEco <- factor(incremento$GrupoEco, 
+                              levels=c("OUTROS","Pioneer","Light-demanding", 
+                                       "Intermediate", "Shade-tolerant", "Emergent"))
+grupoEcoModel = glm(data = incremento, incAnual ~ minDBH + GrupoEco, family=Gamma(link="log"))
+summary(grupoEcoModel)
 
 # Padrão espacial
 
