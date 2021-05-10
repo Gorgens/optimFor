@@ -1,18 +1,18 @@
 ## referências: https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf
 require(plotly)
 
-VFCC = function(dap){                                                           # modelo para estimar o volume
-  return(0.0233768+
-         0.00730236*dap-
-         0.000430709*dap^2+
-         0.0000233749*dap^3)
-}
-
 nparcelas = 30                                                                  # número de parcelas na simulação
 inventario = data.frame(parcela = integer(),
                               arvore = integer(),
                               dap = double(),
                               vol = double())
+VFCC = function(dap){                                                           # modelo para estimar o volume
+  return(0.0233768+
+           0.00730236*dap-
+           0.000430709*dap^2+
+           0.0000233749*dap^3)
+}
+
 for(i in seq(nparcelas)){                                                       # gera parcelas aleatórias
   n = ceiling(rnorm(1, 545, 50))
   arvore = seq(n)
@@ -24,10 +24,12 @@ for(i in seq(nparcelas)){                                                       
 }
 
 # Desvio em relação ao diâmetro ------------------
-erroMedio = c()
-desvPadMedio = c()
 variacaoErroMedio = seq(-1, 1, 0.1)
 variacaoDesvMedio = seq(0.01, 1, 0.05)
+
+erroMedio = c()
+desvPadMedio = c()
+
 for(m in variacaoErroMedio){
   for(d in variacaoDesvMedio){
       erroMedio = append(erroMedio, m)
@@ -65,7 +67,7 @@ for(m in variacaoErroMedio){
 
 
 plot_ly(x=simulado$erroMedio, y=simulado$desvPadMedio, z=simulado$t_pvalue, 
-        type="scatter3d", mode="markers", color=temp)
+        type="mesh3d")
 
 plot_ly(x=simulado$erroMedio, y=simulado$desvPadMedio, z=simulado$ks_pvalue, 
-        type="scatter3d", mode="markers", color=temp)
+        type="mesh3d")
