@@ -14,12 +14,10 @@ When you click the **Knit** button a document will be generated that includes bo
 ## Material e métodos
 
 ```{r packages, echo=FALSE}
-
 require(ggplot2)
 require(dplyr)
 require(forestmangr)
 require(reshape2)
-require(magrittr)
 ```
 
 Fluxograma das opções de conferência analisadas....
@@ -28,7 +26,7 @@ Fluxograma das opções de conferência analisadas....
 
 Procedimento para simulação de floresta baseada em https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf....
 
-```{r parametros}
+```{r parametros, echo=FALSE}
 nparcelas = 30  
 dapMin = 5
 intervaloClasse = 1
@@ -41,7 +39,7 @@ dapWeibullScale = 7
 ```
 
 
-```{r eqVol}
+```{r eqVol, echo=FALSE}
 VFCC = function(dap){                                                           # modelo para estimar o volume
   return(0.0233768+
            0.00730236*dap-
@@ -77,14 +75,26 @@ rm(n, arvore, dap, vol, parcela, temp, i, intervaloClasse)
 
 Simula um desvio com disitribuição normal de média variando entre X e Y, e desvio padrão variando entre X e Y...
 
-```{r checkDAP, echo=FALSE}
+```{r dfSimulado, echo=FALSE}
 simulacoes = seq(1, 100, 1)
 variacaoErroMedio = seq(0, 1, 0.1)
-variacaoDesvMedio = seq(0.1, 1, 0.05)
+variacaoDesvMedio = seq(0.1, 1, 0.1)
 
 simulado = expand.grid(difMedia = variacaoErroMedio,
                        difSd = variacaoDesvMedio,
                        sim = simulacoes)
+
+simulado = data.frame(simulado,
+                      erroInv = 0,
+                      erroInvConf = 0,
+                      erroInvProp = 0,
+                      diffErro = 0,
+                      conf_t = 0,
+                      conf_ks = 0,
+                      conf_graybill = 0,
+                      inv_t = 0,
+                      inv_ks = 0,
+                      inv_graybill = 0)
 ```
 
 
@@ -186,16 +196,36 @@ confereInv = function(inventario, areaplot, probConf, nparcelas, mediaDesvio, de
 ```
 
 
-```{r rodaSimulacao, echo=FALSE}
-confereInv(inventario = inventario, areaplot = 10000, probConf = 0.1, 
-           nparcelas = nparcelas, mediaDesvio = simulado$difMedia[1], 
-           desvPadDesvio = simulado$difSd[1])
+```{r rodaSimulacao, echo=FALSE, eval=FALSE}
+
+for(i in 1:dim(simulado)[1]){
+  simulado[i,4:13] = confereInv(inventario = inventario, areaplot = 10000, 
+                        probConf = 0.1, nparcelas = nparcelas, 
+                        mediaDesvio = simulado$difMedia[i], 
+                        desvPadDesvio = simulado$difSd[i])
+}
+
+simuladoAggregate = simulado %>%
+  group_by(difMedia, difSd) %>%
+  summarise(erroInv = mean(erroInv),
+            erroInvConf = mean(erroInvConf),
+            erroInvProp = mean(erroInvProp),
+            diffErro = mean(diffErro),
+            conf_t = mean(conf_t),
+            conf_ks = mean(conf_ks),
+            conf_graybill = mean(conf_graybill),
+            inv_t = mean(inv_t),
+            inv_ks = mean(inv_ks),
+            inv_graybill = mean(inv_graybill))
+
+write.csv(simuladoAggregate, 'simulado.csv')
 ```
+
 ## Resultados
 
 Distribuição diamétrica....
 
-```{r distDiametrica}
+```{r distDiametrica, echo=FALSE}
 freqDiam = inventario %>% 
   group_by(parcela, centroClasse) %>%
   summarise(freq = n()*(area/10000)) %>%
@@ -213,7 +243,7 @@ simulado = read.csv('simulado.csv')
 Resultado simulação na perspectiva de teste de médias pareado...
 
 ```{r plotTestet, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = t_pvalue)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = conf_t)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
   
@@ -222,7 +252,7 @@ ggplot(simulado, aes(erroMedio, desvPadMedio, z = t_pvalue)) +
 Resultado simulação na perspectiva de teste de distribuição....
 
 ```{r plotKs, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = ks_pvalue)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = conf_ks)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
@@ -230,42 +260,42 @@ ggplot(simulado, aes(erroMedio, desvPadMedio, z = ks_pvalue)) +
 Resultado simulação na perspectiva de teste de F de Graybill em nível de parcela
 
 ```{r plotGraybill, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = graybill)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = conf_graybill)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
 
 ```{r erroInvConf, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = erroInvConf)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = erroInvConf)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
 
 ```{r diffErro, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = diffErro)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = diffErro)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
 
 ```{r invt, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = inv_t)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = inv_t)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
 
 ```{r invks, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = inv_ks)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = inv_ks)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
 
 ```{r invGraybill, echo = FALSE}
-ggplot(simulado, aes(erroMedio, desvPadMedio, z = inv_graybill)) + 
+ggplot(simuladoAggregate, aes(difMedia, difSd, z = inv_graybill)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
