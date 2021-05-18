@@ -13,7 +13,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ## Material e métodos
 
-```{r packages, echo=FALSE}
+```{r packages, echo=FALSE, message=FALSE}
 require(ggplot2)
 require(dplyr)
 require(forestmangr)
@@ -24,12 +24,15 @@ Fluxograma das opções de conferência analisadas....
 
 ![Opções para conferência de 10% das parcelas de inventário florestal baseado na lei estadual de Minas Gerais](./img/fluxograma.png)
 
-Procedimento para simulação de floresta baseada em https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf....
+O primeiro passo foi gerar dados para um inventário de cerrado, contendo 30 parcelas, no qual o DAP segue um distribuição Weibull (parâmetro de forma de 2,5 e parâmetro de escala de 7) e o número de árvores por parcela segue uma distribuição normal (média 545 árvores, com desvio padrão de 50). O processamento do inventário considerou o DAP mínimo de 5 cm e parcelas de 1 ha. O volume de árvores individual foi estimado utilizando a equação do CETEC para cerrado, como é comum nos trabalhos de inventario realizados no estado de Minas Gerais. Este inventário representa neste estudo ós dados protocolados no órgão ambiental (i.e. IEF ou SUPRAM) e que serão conferidos em campo pelos agentes de fiscalização adotando a recomendação de 10% aleatório das parcelas. Daqui por diante, este conjunto de dados será denominado de inventário protocolado.
+
+REF: https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf.
 
 ```{r parametros, echo=FALSE}
 nparcelas = 30  
 dapMin = 5
 intervaloClasse = 1
+area = 10000
 
 narvMedia = 545
 narvSd = 50
@@ -96,6 +99,16 @@ simulado = data.frame(simulado,
                       inv_ks = 0,
                       inv_graybill = 0)
 ```
+
+A partir do sorteio de 10% das parcelas do inventário protocoloado, o agente irá a campo realizar a medição das parcelas. De forma objetiva, espera-se avaliar o quanto os valores informados no inventário protocolado difere dos valores mensurados pelo agente. A escolha das parcelas a serem conferidos foi feito de forma aleatória, e em seguida foi incluído uma diferença conhecida nos DAPs da parcela. A diferença incluida em cada DAP seguiu uma distribuição normal de média variando de 0 a 1 cm e desvio padrão variando de 0,1 a 1 cm, resultando em 110 combinações de média e desvio padrão. Cada uma das combinações de média e desvio padrão para geração das diferenças a ser incluíuda nos diâmetros foram repetidos 100 vezes.
+
+Considernado os 110 cenários (combinação de média e desvio padrão), repetidos 100 vezes...
+
+(1) Comparação somente entre as parcelas conferidas, com seus respectivos valores protocolados...
+
+(2) Comparação entre o inventário protocolado com todos os dados originais (100% dados protocolados) e o inventário protocolado, no qual as parcelas conferidas foram substituídas pelas medições do agente (90% dados protocolados + 10% dados conferidos).
+
+(3) Comparação entre o inventário protocolado com todos os dados originais (100% dados protocolados) e o inventário protocolado adicionando uma diferença aleatória a todos os DAP medidos seguindo a distribuição das diferenças detectadas pela conferência em campo (inventário propagado).
 
 
 ```{r funcConferencia, echo=FALSE}
@@ -223,7 +236,7 @@ write.csv(simuladoAggregate, 'simulado.csv')
 
 ## Resultados
 
-Distribuição diamétrica....
+Distribuição diamétrica do inventário simulado, repretando dados protocolados junto ao órgão....
 
 ```{r distDiametrica, echo=FALSE}
 freqDiam = inventario %>% 
@@ -236,66 +249,72 @@ ggplot(freqDiam, aes(centroClasse, freq)) + geom_col()
 ```
 
 
-```{r plotTestet, echo = FALSE}
+```{r readSimulado, echo = FALSE}
 simulado = read.csv('simulado.csv')
 ```
 
-Resultado simulação na perspectiva de teste de médias pareado...
+Teste t entre DAP das árvores medidas no inventário protocolado e conferidas...
 
 ```{r plotTestet, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = conf_t)) + 
+ggplot(simulado, aes(difMedia, difSd, z = conf_t)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
   
 ```
 
-Resultado simulação na perspectiva de teste de distribuição....
+Tete de kolmogorov smirnov entre distribuições dos DAP das árvores medidas no inventário protocolado e conferidas...
 
 ```{r plotKs, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = conf_ks)) + 
+ggplot(simulado, aes(difMedia, difSd, z = conf_ks)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
-Resultado simulação na perspectiva de teste de F de Graybill em nível de parcela
+Teste F de Graybill entre volume das parcelas medidas no inventário protocolado e conferido....
 
 ```{r plotGraybill, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = conf_graybill)) + 
+ggplot(simulado, aes(difMedia, difSd, z = conf_graybill)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
+Erro do inventário, em que as parcelas originais foram substituídas pelas parcelas conferidas...
 
 ```{r erroInvConf, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = erroInvConf)) + 
+ggplot(simulado, aes(difMedia, difSd, z = erroInvConf)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
+Diferença do erro amostral calculado para o inventário protocolado e para o inventário cujas parcelas originais foram substituídas pelas parcelas conferidas...
 
 ```{r diffErro, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = diffErro)) + 
+ggplot(simulado, aes(difMedia, difSd, z = diffErro)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
+Teste t entre os DAPs das árvores medidas no inventário original e dos DAPs do invetário original acrescidos de um erro normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invt, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = inv_t)) + 
+ggplot(simulado, aes(difMedia, difSd, z = inv_t)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
+
+Teste de kolmogorov smirnov entre distribuições dos DAPs das árvores medidas no inventário original e dos DAPs do inventário original acrescidos de um erro normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invks, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = inv_ks)) + 
+ggplot(simulado, aes(difMedia, difSd, z = inv_ks)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
 
+Teste F de Graybill entre volumes das parcelas medidas no inventário original e das parcelas originais acrescidas das diferenças geradas por uma distribuição normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invGraybill, echo = FALSE}
-ggplot(simuladoAggregate, aes(difMedia, difSd, z = inv_graybill)) + 
+ggplot(simulado, aes(difMedia, difSd, z = inv_graybill)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)')
 ```
