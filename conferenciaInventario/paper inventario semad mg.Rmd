@@ -7,9 +7,16 @@ output: word_document
 
 ## Introdução
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Falar da legislação estadual...
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Resgatar quando o 10% foi introduzido...
+
+Motivação do legislador....
+
+Operacionalização no órgão...
+
+Objetivo do paper...
+
 
 ## Material e métodos
 
@@ -29,13 +36,13 @@ O primeiro passo foi gerar dados para um inventário de cerrado, contendo 30 par
 REF: https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf.
 
 ```{r parametros, echo=FALSE}
-nparcelas = 30  
+nparcelas = 15  
 dapMin = 5
 intervaloClasse = 1
-area = 10000
+area = 1000
 
-narvMedia = 545
-narvSd = 50
+narvMedia = 54
+narvSd = 5
 
 dapWeibullShape = 2.5
 dapWeibullScale = 7
@@ -43,11 +50,11 @@ dapWeibullScale = 7
 
 
 ```{r eqVol, echo=FALSE}
-VFCC = function(dap){                                                           # modelo para estimar o volume
-  return(0.0233768+
-           0.00730236*dap-
-           0.000430709*dap^2+
-           0.0000233749*dap^3)
+VTCC = function(dap){                                                           # modelo para estimar o volume
+  return(-0.0393500+
+           0.0118579*dap-
+           0.000819184*dap^2+
+           0.0000413787*dap^3)
 }
 ```
 
@@ -62,7 +69,7 @@ for(i in seq(nparcelas)){                                                       
   n = ceiling(rnorm(1, narvMedia, narvSd))
   arvore = seq(n)
   dap = rweibull(n, dapWeibullShape, dapWeibullScale)
-  vol = VFCC(dap)
+  vol = VTCC(dap)
   parcela = rep(i, n)
   temp = data.frame(parcela, arvore, dap, vol)
   inventario = rbind(inventario, temp)
@@ -114,7 +121,7 @@ Considernado os 110 cenários (combinação de média e desvio padrão), repetid
 ```{r funcConferencia, echo=FALSE}
 confereInv = function(inventario, areaplot, probConf, nparcelas, mediaDesvio, desvPadDesvio){
     # sorteia parcelas que serão conferidas pelo órgão
-    parcSorteadas = sample(seq(nparcelas), probConf*nparcelas)
+    parcSorteadas = sample(seq(nparcelas), ifelse(ceiling(probConf*nparcelas) < 3, 3, ceiling(probConf*nparcelas)))
     conferencia = subset(inventario, 
                          parcela %in% parcSorteadas)
     `%notin%` = Negate(`%in%`)
@@ -124,7 +131,7 @@ confereInv = function(inventario, areaplot, probConf, nparcelas, mediaDesvio, de
     # simula dados conferidos a partir de media e desvio desejado
     desvio = rnorm(dim(conferencia)[1], mediaDesvio, desvPadDesvio)           # gera desvio aleatório
     conferencia$dapConferencia = conferencia$dap + desvio
-    conferencia$volConferencia = VFCC(conferencia$dapConferencia)
+    conferencia$volConferencia = VTCC(conferencia$dapConferencia)
     
     # calcula diferença média estre original e conferido
     # temp1 = conferencia %>% 
@@ -145,7 +152,7 @@ confereInv = function(inventario, areaplot, probConf, nparcelas, mediaDesvio, de
     # cria base de inventário com erro observado na conferência
     inventarioPropagado = inventario
     inventarioPropagado$dap = inventarioPropagado$dap + rnorm(dim(inventarioPropagado)[1], mediaDesvio, desvPadDesvio)
-    inventarioPropagado$vol = VFCC(inventarioPropagado$dap)
+    inventarioPropagado$vol = VTCC(inventarioPropagado$dap)
     
     # processa inventarios
     totalizacaoInv = plot_summarise(inventario, "parcela", plot_area = areaplot, dbh = "dap", vwb = 'vol')
@@ -231,7 +238,7 @@ simuladoAggregate = simulado %>%
             inv_ks = mean(inv_ks),
             inv_graybill = mean(inv_graybill))
 
-write.csv(simuladoAggregate, 'simulado.csv')
+write.csv(simuladoAggregate, 'simulado15.csv')
 ```
 
 ## Resultados
@@ -278,22 +285,6 @@ ggplot(simulado, aes(difMedia, difSd, z = conf_graybill)) +
   xlab('Diferença média do DAP (cm)')
 ```
 
-Erro do inventário, em que as parcelas originais foram substituídas pelas parcelas conferidas...
-
-```{r erroInvConf, echo = FALSE}
-ggplot(simulado, aes(difMedia, difSd, z = erroInvConf)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
-```
-
-Diferença do erro amostral calculado para o inventário protocolado e para o inventário cujas parcelas originais foram substituídas pelas parcelas conferidas...
-
-```{r diffErro, echo = FALSE}
-ggplot(simulado, aes(difMedia, difSd, z = diffErro)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
-```
-
 Teste t entre os DAPs das árvores medidas no inventário original e dos DAPs do invetário original acrescidos de um erro normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invt, echo = FALSE}
@@ -319,9 +310,36 @@ ggplot(simulado, aes(difMedia, difSd, z = inv_graybill)) +
   xlab('Diferença média do DAP (cm)')
 ```
 
+Erro do inventário, em que as parcelas originais foram substituídas pelas parcelas conferidas...
+
+```{r erroInvConf, echo = FALSE}
+ggplot(simulado, aes(difMedia, difSd, z = erroInvConf)) + 
+  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  xlab('Diferença média do DAP (cm)')
+```
+
+Diferença do erro amostral calculado para o inventário protocolado e para o inventário cujas parcelas originais foram substituídas pelas parcelas conferidas...
+
+```{r diffErro, echo = FALSE}
+ggplot(simulado, aes(difMedia, difSd, z = diffErro)) + 
+  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  xlab('Diferença média do DAP (cm)')
+```
+
+
 ## Discussão
 
 Comparação em nível de árvore e em nível de parcela...
+
+Os 10% conferem a medição e não o inventário...
+
+É muito mais importante detectar a fraude, do que o erro de medição...
+
+Os 10% não rião alterar o erro amostral do inventário entregue...
+
+Influência do N para os testes de hipótese...
+
+Sempre conferir no mínimo 3...
 
 Caminho mais lógico...
 
@@ -329,7 +347,9 @@ Análise laranja... perceber se o erro obtido na conferência de 10% será dilu�
 
 Análise vermelha... o conceito é de que o erro que ocorre nos 10% ocorrerá em todo o inventário...
 
-O erro pode vir dos dois lados....
+O erro pode vir dos dois lados.... órgão e empreendimento...
+
+Ir a campo a campo com um método mais rápido tipo Bitterlich...
 
 ## Referências
 
