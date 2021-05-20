@@ -1,9 +1,10 @@
 ---
 title: "Procedimentos para conferência em campo de inventários florestais"
-author: "Gorgens et al"
-date: "09/05/2021"
+author: "Matuda, Otoni, Oliveira & Gorgens"
+date: "20/05/2021"
 output: word_document
 ---
+v0.4
 
 ## Introdução
 
@@ -11,12 +12,17 @@ Falar da legislação estadual...
 
 Resgatar quando o 10% foi introduzido...
 
-Motivação do legislador....
+Motivação do legislador para incluir o 10%....
 
-Operacionalização no órgão...
+Operacionalização no órgão... padronizar os seguintes nomes (1) inventário protocolado, (2) sorteio do 10% das parcelas que serão conferidas pelo órgão, (3) medições das árvores das parcelas remedidas... 
+
+De posse dos dados inventariados, o agente deve analisar o inventário protocolado.... buscas por parâmetros objetivos e técnicos... redução de subjetividade e aumento da assertividade do analista. Comparações diretadas entre os dados protocolados e os dados conferidos... em nível de parcelas ou em nível de árvores. Alternativas: (1) testes de hipóteses: testes de médias, teste de distribuição; (2) impacto no erro amostral.
+
+Na prática, devido a não identificação individual das árvores inventariadas em campo, impede o pareamento entre conferido e protocolado, mas teoricamente, os dados pareados permitiria obter a distribuição das diferenças no DAP medido entre as árvores conferidas e as árvores do inventário protocolado... 
+
+Assumindo que as diferenças entre árvores conferidas e protocoladas seguem uma determinada distribuição, é possível simular o impacto de diferentes distribuições das diferenças de DAP nos diferentes testes com potencial de serem utilizados pelo analista do órgão... 
 
 Objetivo do paper...
-
 
 ## Material e métodos
 
@@ -24,14 +30,15 @@ Objetivo do paper...
 require(ggplot2)
 require(dplyr)
 require(forestmangr)
-require(reshape2)
 ```
 
-Fluxograma das opções de conferência analisadas....
+O desafio do paper é criar e analisar a partir da simulação, o impacto de diferentes intensidade de diferenças entre protocolado e conferido nas diferentes alternativas de comparação estatística que o analista poderia utilziar....
 
-![Opções para conferência de 10% das parcelas de inventário florestal baseado na lei estadual de Minas Gerais](./img/fluxograma.png)
+![Opções para conferência de 10% das parcelas de inventário florestal baseado na lei estadual de Minas Gerais](./fluxograma.png)
 
-O primeiro passo foi gerar dados para um inventário de cerrado, contendo 30 parcelas, no qual o DAP segue um distribuição Weibull (parâmetro de forma de 2,5 e parâmetro de escala de 7) e o número de árvores por parcela segue uma distribuição normal (média 545 árvores, com desvio padrão de 50). O processamento do inventário considerou o DAP mínimo de 5 cm e parcelas de 1 ha. O volume de árvores individual foi estimado utilizando a equação do CETEC para cerrado, como é comum nos trabalhos de inventario realizados no estado de Minas Gerais. Este inventário representa neste estudo ós dados protocolados no órgão ambiental (i.e. IEF ou SUPRAM) e que serão conferidos em campo pelos agentes de fiscalização adotando a recomendação de 10% aleatório das parcelas. Daqui por diante, este conjunto de dados será denominado de inventário protocolado.
+O primeiro passo foi gerar dados simulados de um inventário de cerrado, contendo 15, 20, 25 e 30 parcelas, no qual a população de árvores possuem DAPs seguindo uma distribuição Weibull (parâmetro de forma de 2,5 e parâmetro de escala de 7) e o número de árvores por parcela segue uma distribuição normal (média 54 árvores, com desvio padrão de 5). 
+
+O processamento do inventário considerou o DAP mínimo de 5 cm e parcelas de 0,1 ha. O volume total das árvores individuais foi estimado utilizando a equação do CETEC para cerrado, como é comum nos trabalhos de inventario realizados no estado de Minas Gerais. Este dado simulado representa o inventário protocolado no órgão ambiental (i.e. IEF ou SUPRAM) e que, no fluxo de trabalho do órgão, serão conferidos em campo pelos analistas seguindo a legislação estadual de 10% das parcelas. Daqui por diante, este conjunto de dados será denominado de inventário protocolado (IP).
 
 REF: https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf.
 
@@ -245,7 +252,7 @@ write.csv(simuladoAggregate, 'simulado30.csv')
 
 Distribuição diamétrica do inventário simulado, repretando dados protocolados junto ao órgão....
 
-```{r distDiametrica, echo=FALSE}
+```{r distDiametrica, echo=FALSE, eval=FALSE}
 freqDiam = inventario %>% 
   group_by(parcela, centroClasse) %>%
   summarise(freq = n()*(area/10000)) %>%
@@ -283,33 +290,36 @@ simulado = rbind(simulado15,
 Teste t entre DAP das árvores medidas no inventário protocolado e conferidas...
 
 ```{r plotTestet, echo = FALSE}
+breaks = c(0, 0.05, 0.1, 1)
 ggplot(simulado, aes(difMedia, difSd, z = conf_t)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  geom_contour_filled(breaks = breaks) + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
-  
 ```
 
 Tete de kolmogorov smirnov entre distribuições dos DAP das árvores medidas no inventário protocolado e conferidas...
 
 ```{r plotKs, echo = FALSE}
+breaks = c(0, 0.05, 0.1, 1)
 ggplot(simulado, aes(difMedia, difSd, z = conf_ks)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  geom_contour_filled(breaks = breaks) + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Teste F de Graybill entre volume das parcelas medidas no inventário protocolado e conferido....
 
 ```{r plotGraybill, echo = FALSE}
+breaks = c(0, 0.05, 0.1, 1)
 ggplot(simulado, aes(difMedia, difSd, z = conf_graybill)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  geom_contour_filled(breaks = breaks) + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Teste t entre os DAPs das árvores medidas no inventário original e dos DAPs do invetário original acrescidos de um erro normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invt, echo = FALSE}
+breaks = c(0, 0.05, 0.1, 1)
 ggplot(simulado, aes(difMedia, difSd, z = inv_t)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  geom_contour_filled(breaks = breaks) + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
@@ -317,16 +327,18 @@ ggplot(simulado, aes(difMedia, difSd, z = inv_t)) +
 Teste de kolmogorov smirnov entre distribuições dos DAPs das árvores medidas no inventário original e dos DAPs do inventário original acrescidos de um erro normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invks, echo = FALSE}
+breaks = c(0, 0.05, 0.1, 1)
 ggplot(simulado, aes(difMedia, difSd, z = inv_ks)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  geom_contour_filled(breaks = breaks) + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Teste F de Graybill entre volumes das parcelas medidas no inventário original e das parcelas originais acrescidas das diferenças geradas por uma distribuição normal com média e desvio padrão obtidos nas árvores conferidas...
 
 ```{r invGraybill, echo = FALSE}
+breaks = c(0, 0.05, 0.1, 1)
 ggplot(simulado, aes(difMedia, difSd, z = inv_graybill)) + 
-  geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
+  geom_contour_filled(breaks = breaks) + ylab('Desvio padrão da diferença (cm)') +
   xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
