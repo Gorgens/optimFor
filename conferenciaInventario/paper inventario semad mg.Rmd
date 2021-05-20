@@ -36,7 +36,7 @@ O primeiro passo foi gerar dados para um inventário de cerrado, contendo 30 par
 REF: https://www.revistaespacios.com/a17v38n23/a17v38n23p13.pdf.
 
 ```{r parametros, echo=FALSE}
-nparcelas = 15  
+nparcelas = 30  
 dapMin = 5
 intervaloClasse = 1
 area = 1000
@@ -238,7 +238,7 @@ simuladoAggregate = simulado %>%
             inv_ks = mean(inv_ks),
             inv_graybill = mean(inv_graybill))
 
-write.csv(simuladoAggregate, 'simulado15.csv')
+write.csv(simuladoAggregate, 'simulado30.csv')
 ```
 
 ## Resultados
@@ -257,7 +257,27 @@ ggplot(freqDiam, aes(centroClasse, freq)) + geom_col()
 
 
 ```{r readSimulado, echo = FALSE}
-simulado = read.csv('simulado.csv')
+simulado15 = read.csv('simulado15.csv')
+simulado15 = simulado15 %>%
+  mutate(sim = 15)
+
+simulado20 = read.csv('simulado20.csv')
+simulado20 = simulado20 %>%
+  mutate(sim = 20)
+
+simulado25 = read.csv('simulado25.csv')
+simulado25 = simulado25 %>%
+  mutate(sim = 25)
+
+simulado30 = read.csv('simulado30.csv')
+simulado30 = simulado30 %>%
+  mutate(sim = 30)
+
+simulado = rbind(simulado15,
+                 simulado20,
+                 simulado25,
+                 simulado30)
+
 ```
 
 Teste t entre DAP das árvores medidas no inventário protocolado e conferidas...
@@ -265,7 +285,7 @@ Teste t entre DAP das árvores medidas no inventário protocolado e conferidas..
 ```{r plotTestet, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = conf_t)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
   
 ```
 
@@ -274,7 +294,7 @@ Tete de kolmogorov smirnov entre distribuições dos DAP das árvores medidas no
 ```{r plotKs, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = conf_ks)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Teste F de Graybill entre volume das parcelas medidas no inventário protocolado e conferido....
@@ -282,7 +302,7 @@ Teste F de Graybill entre volume das parcelas medidas no inventário protocolado
 ```{r plotGraybill, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = conf_graybill)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Teste t entre os DAPs das árvores medidas no inventário original e dos DAPs do invetário original acrescidos de um erro normal com média e desvio padrão obtidos nas árvores conferidas...
@@ -290,7 +310,7 @@ Teste t entre os DAPs das árvores medidas no inventário original e dos DAPs do
 ```{r invt, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = inv_t)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 
@@ -299,7 +319,7 @@ Teste de kolmogorov smirnov entre distribuições dos DAPs das árvores medidas 
 ```{r invks, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = inv_ks)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Teste F de Graybill entre volumes das parcelas medidas no inventário original e das parcelas originais acrescidas das diferenças geradas por uma distribuição normal com média e desvio padrão obtidos nas árvores conferidas...
@@ -307,7 +327,7 @@ Teste F de Graybill entre volumes das parcelas medidas no inventário original e
 ```{r invGraybill, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = inv_graybill)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Erro do inventário, em que as parcelas originais foram substituídas pelas parcelas conferidas...
@@ -315,7 +335,7 @@ Erro do inventário, em que as parcelas originais foram substituídas pelas parc
 ```{r erroInvConf, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = erroInvConf)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 Diferença do erro amostral calculado para o inventário protocolado e para o inventário cujas parcelas originais foram substituídas pelas parcelas conferidas...
@@ -323,7 +343,7 @@ Diferença do erro amostral calculado para o inventário protocolado e para o in
 ```{r diffErro, echo = FALSE}
 ggplot(simulado, aes(difMedia, difSd, z = diffErro)) + 
   geom_contour_filled() + ylab('Desvio padrão da diferença (cm)') +
-  xlab('Diferença média do DAP (cm)')
+  xlab('Diferença média do DAP (cm)') + facet_wrap(~ sim)
 ```
 
 
